@@ -1,5 +1,3 @@
-
-
 > **Application:** AllSafe v1.0  
 > **Platform:** Android  
 > **Package:** `infosecadventures.allsafe`  
@@ -102,7 +100,7 @@ The flag is exposed in plain text in the logs.
 ### AllSafe-02: Hardcoded Credentials [Challenge 02]
 
 | Attribute               | Detail                                       |
-| ----------------------- | -------------------------------------------- |
+| ----------------------- | --------------------------------------------- |
 | **Challenge**           | 2. Hardcoded Credentials                     |
 | **CWE**                 | CWE-798: Use of Hard-coded Credentials       |
 | **OWASP Mobile Top 10** | M9: Reverse Engineering                      |
@@ -123,10 +121,10 @@ The application stores sensitive information (a password/flag) as hardcoded stri
 #### Proof of Concept
 
 **Step 1:** Open the Hardcoded Credentials challenge.
-![Challenge 02 Briefing](screenshot-01.png)
+![Challenge 02 Briefing](assets/screenshot-01.png)
 
 **Step 2:** Decompile the APK using tools like JADX and locate the hardcoded string `SuperSecretPassword`.
-![Jadx Hardcoded String](screenshot-02.png)
+![Jadx Hardcoded String](assets/screenshot-02.png)
 
 #### Mitigation
 
@@ -162,11 +160,11 @@ The application stores sensitive data in cleartext within Android Shared Prefere
 #### Proof of Concept
 
 **Step 1:** Open the Insecure Shared Preferences challenge and save credentials.
-![Challenge 03 Briefing](screenshot-03.png)
+![Challenge 03 Briefing](assets/screenshot-03.png)
 
 **Step 2:** Access the application's data directory via ADB and read the file:
 `cat /data/data/infosecadventures.allsafe/shared_prefs/...`
-![Shared Preferences Data](screenshot-04.png)
+![Shared Preferences Data](assets/screenshot-04.png)
 
 #### Mitigation
 
@@ -203,12 +201,12 @@ The application is vulnerable to SQL Injection, allowing an attacker to bypass a
 #### Proof of Concept
 
 **Step 1:** Open the SQL Injection Bypass challenge.
-![Challenge 04 Briefing](screenshot-05.png)
+![Challenge 04 Briefing](assets/screenshot-05.png)
 
 **Step 2:** In the input field, enter the payload: `' OR '1'='1`
 
 **Step 3:** The query evaluates to true, bypassing the intended authentication check.
-![SQL Injection Success](screenshot-06.png)
+![SQL Injection Success](assets/screenshot-06.png)
 
 #### Mitigation
 
@@ -244,16 +242,16 @@ The application exposes its Firebase database URL in the `strings.xml` file and 
 #### Proof of Concept
 
 **Step 1:** Read the briefing for the challenge.
-![Challenge 05 Briefing](screenshot-07.png)
+![Challenge 05 Briefing](assets/screenshot-07.png)
 
 **Step 2:** Extract `strings.xml` and locate the Firebase database URL.
-![strings.xml Firebase URL](screenshot-08.png)
+![strings.xml Firebase URL](assets/screenshot-08.png)
 
 **Step 3:** Access the database URL via a browser, appending `.json`.
-![Firebase Console Access](screenshot-09.png)
+![Firebase Console Access](assets/screenshot-09.png)
 
 **Step 4:** The database returns the flag without requiring authentication.
-![Exposed Data](screenshot-10.png)
+![Exposed Data](assets/screenshot-10.png)
 
 #### Mitigation
 
@@ -289,16 +287,16 @@ The application uses insecure deep links to perform actions without sufficient v
 #### Proof of Concept
 
 **Step 1:** Open the Deep Link Exploitation challenge.
-![Challenge 06 Briefing](screenshot-11.png)
+![Challenge 06 Briefing](assets/screenshot-11.png)
 
 **Step 2:** Identify the deep link scheme (`allsafe://infosecadventures/congrats?key=ebfb...`) from the app's manifest/strings.
-![strings.xml Deep Link Key](screenshot-12.png)
+![strings.xml Deep Link Key](assets/screenshot-12.png)
 
 **Step 3:** Trigger the deep link using ADB: `adb shell am start -a "android.intent.action.VIEW" -d "allsafe://infosecadventures/congrats?key=..."`
-![ADB Intent Execution](Screenshot%202026-05-28%20202547.png)
+![ADB Intent Execution](assets/Screenshot%202026-05-28%20202547.png)
 
 **Step 4:** The deep link is executed successfully.
-![Deep Link Executed](screenshot-13.png)
+![Deep Link Executed](assets/screenshot-13.png)
 
 #### Mitigation
 
@@ -334,10 +332,10 @@ The application's WebView is vulnerable to Cross-Site Scripting (XSS) and allows
 #### Proof of Concept
 
 **Step 1:** Open the WebView challenge.
-![Challenge 07 Briefing](screenshot-14.png)
+![Challenge 07 Briefing](assets/screenshot-14.png)
 
 **Step 2:** Input `file:///etc/hosts` into the WebView URL prompt.
-![Payload Entry](screenshot-15.png)
+![Payload Entry](assets/screenshot-15.png)
 
 **Step 3:** The WebView fetches and displays the contents of the local file.
 
@@ -375,13 +373,13 @@ The application implements PIN verification locally, which can be bypassed using
 #### Proof of Concept
 
 **Step 1:** Navigate to the challenge.
-![Challenge 08 Briefing](screenshot-16.png)
+![Challenge 08 Briefing](assets/screenshot-16.png)
 
 **Step 2:** Identify the `checkPin` method in the application source code using JADX.
-![Jadx checkPin Method](screenshot-17.png)
+![Jadx checkPin Method](assets/screenshot-17.png)
 
 **Step 3:** Write a Frida script to hook and bypass this method by forcing it to return `true`. The PIN prompt is successfully bypassed.
-![Frida Bypass Execution](screenshot-18.png)
+![Frida Bypass Execution](assets/screenshot-18.png)
 
 #### Mitigation
 
@@ -417,22 +415,22 @@ The application insecurely serializes user data and stores it in `user.dat`. Des
 #### Proof of Concept
 
 **Step 1:** Open the challenge.
-![Challenge 09 Briefing](screenshot-19.png)
+![Challenge 09 Briefing](assets/screenshot-19.png)
 
 **Step 2:** Pull the serialized file `user.dat` from the device.
-![ADB Pull Command](screenshot-20.png)
+![ADB Pull Command](assets/screenshot-20.png)
 
 **Step 3:** Open it in a Hex Editor and find the `ROLE_USER` string.
-![Hex Editor ROLE_USER](screenshot-21.png)
+![Hex Editor ROLE_USER](assets/screenshot-21.png)
 
 **Step 4:** Modify it to `ROLE_EDITOR`.
-![Hex Editor ROLE_EDITOR](screenshot-22.png)
+![Hex Editor ROLE_EDITOR](assets/screenshot-22.png)
 
 **Step 5:** Push the modified file back to the device.
-![ADB Push Command](screenshot-23.png)
+![ADB Push Command](assets/screenshot-23.png)
 
 **Step 6:** The application deserializes the tampered object and grants the escalated privileges.
-![Success Toast](screenshot-24.png)
+![Success Toast](assets/screenshot-24.png)
 
 #### Mitigation
 
@@ -468,7 +466,7 @@ The application attempts to pin its SSL certificates, but the implementation is 
 #### Proof of Concept
 
 **Step 1:** Access the Certificate Pinning challenge.
-![Challenge 10 Briefing](screenshot-25.png)
+![Challenge 10 Briefing](assets/screenshot-25.png)
 
 **Step 2:** The application rejects MITM proxies by default.
 **Step 3:** Run a Frida pinning bypass script during runtime to bypass the checks.
@@ -507,13 +505,13 @@ The application exports a broadcast receiver (`NoteReceiver`) without any permis
 #### Proof of Concept
 
 **Step 1:** Review the challenge briefing.
-![Challenge Briefing](screenshot-26.png)
+![Challenge Briefing](assets/screenshot-26.png)
 
 **Step 2:** Locate the exported receiver in the Manifest and its source code.
-![NoteReceiver Source Code](screenshot-27.png)
+![NoteReceiver Source Code](assets/screenshot-27.png)
 
 **Step 3:** Trigger the broadcast using ADB: `adb shell am broadcast -a <action>`.
-![ADB Broadcast Trigger](screenshot-28.png)
+![ADB Broadcast Trigger](assets/screenshot-28.png)
 
 #### Mitigation
 
@@ -568,9 +566,9 @@ Java.perform(function() {
 });
 ```
 **Step 4:** Run Frida with: `frida -U -f infosecadventures.allsafe -l native_java_bypass.js --no-pause`
-![[screenshot-29.png]]
+![[assets/screenshot-29.png]]
 **Step 5:** Enter any password and bypass the check successfully.
-![[Screenshot 2026-01-01 160857.png]]
+![[assets/Screenshot 2026-01-01 160857.png]]
 #### Mitigation
 
 1. Never rely entirely on client-side security checks, especially for authentication.
@@ -603,12 +601,12 @@ The application initializes an enum value to `INACTIVE`, but the success check r
 - **Code Tampering:** Attackers can bypass client-side restrictions permanently by modifying the APK file and repackaging it.
 
 #### Proof of Concept
-![[screenshot-30.png]]
+![[assets/screenshot-30.png]]
 
-![[screenshot-31.png]]
+![[assets/screenshot-31.png]]
 
 **Step 1:** Decompile the APK using apktool: `apktool d allsafe.apk -o allsafe_decompiled`.
-![[screenshot-32.png]]
+![[assets/screenshot-32.png]]
 **Step 2:** Locate the `SmaliPatch.smali` file (e.g. `allsafe_decompiled\smali\infosecadventures\allsafe\challenges\SmaliPatch.smali`).
 **Step 3:** Open the file and search for the `INACTIVE` enum reference:
 ```smali
@@ -619,17 +617,17 @@ sget-object v0, Linfosecadventures/allsafe/challenges/SmaliPatch$Firewall;->INAC
 sget-object v0, Linfosecadventures/allsafe/challenges/SmaliPatch$Firewall;->ACTIVE:Linfosecadventures/allsafe/challenges/SmaliPatch$Firewall;
 ```
 **Step 5:** Save the file and rebuild the APK: `apktool b allsafe_decompiled -o allsafe-patched.apk`.
-![[Screenshot 2026-01-02 121545.png]]
-![[screenshot-33.png]]
+![[assets/Screenshot 2026-01-02 121545.png]]
+![[assets/screenshot-33.png]]
 **Step 6:** Sign the APK using `uber-apk-signer.jar` or `apksigner`.
-![[screenshot-34.png]]
+![[assets/screenshot-34.png]]
 **Step 7:** Uninstall the original app and install the patched APK.
 
 `adb uninstall infosecadventures.allsafe`
 `adb install allsafe-patched-aligned-debugSigned.apk`
 
 **Step 8:** Test the firewall check, which now evaluates to true.
-![[screenshot-35.png]]
+![[assets/screenshot-35.png]]
 #### Mitigation
 
 1. Implement runtime integrity checks (such as SafetyNet or Play Integrity API).
@@ -664,7 +662,7 @@ The application uses weak cryptographic algorithms (like AES in ECB mode) or har
 #### Proof of Concept
 
 **Step 1:** Navigate to the cryptography challenge.
-![Challenge 15 Briefing](screenshot-36.png)
+![Challenge 15 Briefing](assets/screenshot-36.png)
 
 **Step 2:** Examine the crypto implementation and observe the usage of ECB mode or hardcoded keys.
 
@@ -701,14 +699,14 @@ The application detects rooted devices but can be easily bypassed by hooking the
 
 #### Proof of Concept
 
-**Step 1:** Launch the app and identify the root detection challenge and try to capture a screenshot.![[screenshot-37.png]]
-
+**Step 1:** Launch the app and identify the root detection challenge and try to capture a screenshot.
+![[assets/screenshot-37.png]]
 
 **Step 2:** Write a Frida script to hook `isRooted()` and force it to return false.
-![Frida Script Execution](Screenshot%202026-05-28%20152256.png)
+![Frida Script Execution](assets/Screenshot%202026-05-28%20152256.png)
 
-**Step 3:** The root check is successfully bypassed.![[screenshot-38.png]]
-
+**Step 3:** The root check is successfully bypassed.
+![[assets/screenshot-38.png]]
 
 #### Mitigation
 
@@ -744,13 +742,13 @@ The application exports a Content Provider (`infosecadventures.allsafe.dataprovi
 #### Proof of Concept
 
 **Step 1:** View the challenge prompt.
-![Challenge 17 Briefing](screenshot-39.png)
+![Challenge 17 Briefing](assets/screenshot-39.png)
 
 **Step 2:** Identify the exported `DataProvider` in the `AndroidManifest.xml`.
-![Manifest Exported Provider](screenshot-40.png)
+![Manifest Exported Provider](assets/screenshot-40.png)
 
 **Step 3:** Query the provider using ADB: `adb shell content query --uri "content://infosecadventures.allsafe.dataprovider"`.
-![Data Exfiltration](screenshot-41.png)
+![Data Exfiltration](assets/screenshot-41.png)
 
 #### Mitigation
 
@@ -786,10 +784,10 @@ The application relies on `FLAG_SECURE` to prevent screenshots of sensitive data
 #### Proof of Concept
 
 **Step 1:** Access the challenge screen.
-![Challenge 18 Briefing](screenshot-42.png)
+![Challenge 18 Briefing](assets/screenshot-42.png)
 
 **Step 2:** Alternatively, hook the method using Frida.
-![Frida Script Execution](screenshot-43.png)
+![Frida Script Execution](assets/screenshot-43.png)
 
 **Step 3:** Recompile and install or run the frida script, allowing screenshots to be taken.
 
@@ -826,17 +824,17 @@ The application exports an insecure background service (`RecorderService`) witho
 #### Proof of Concept
 
 **Step 1:** Open the challenge.
-![Challenge 20 Briefing](screenshot-44.png)
+![Challenge 20 Briefing](assets/screenshot-44.png)
 
 **Step 2:** Identify the exported `RecorderService` in the `AndroidManifest.xml`.
-![Manifest Exported Service](screenshot-45.png)
+![Manifest Exported Service](assets/screenshot-45.png)
 
 **Step 3:** Start the service using ADB: `adb shell am start-foreground-service infosecadventures.allsafe/.challenges.RecorderService`.
-![ADB Service Start](screenshot-46.png)
+![ADB Service Start](assets/screenshot-46.png)
 
 **Step 4:** The device begins recording audio without user interaction.
-![Audio Recording Started](screenshot-47.png)
-![Audio Recording Stopped](screenshot-48.png)
+![Audio Recording Started](assets/screenshot-47.png)
+![Audio Recording Stopped](assets/screenshot-48.png)
 
 #### Mitigation
 
@@ -910,4 +908,4 @@ These findings highlight common Android security pitfalls:
 1. [OWASP Mobile Top 10 (2024)](https://owasp.org/www-project-mobile-top-10/)
 2. [CWE — Common Weakness Enumeration](https://cwe.mitre.org/)
 3. [CVSS v3.1 Calculator — FIRST](https://www.first.org/cvss/calculator/3.1)
-4. [Android Security Best Practices](https://developer.android.com/topic/security/best-practices
+4. [Android Security Best Practices](https://developer.android.com/topic/security/best-practices)
