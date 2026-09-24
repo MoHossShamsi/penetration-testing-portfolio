@@ -241,11 +241,17 @@ Severity estimates describe the demonstrated lab behavior and should be recalcul
   **Step 3:** The service is created successfully, displaying a "Service Created" toast:
   ![Service Created Toast](assets/screenshot-27.png)
   **Step 4:** The service triggers the invoice download, showing "Invoice is being downloaded":
+  
   ![Invoice Download Triggered](assets/screenshot-28.png)
+  
   **Step 5:** The download completes — `AndroGoatInvoice.txt` is saved to the Downloads folder:
+  
   ![Invoice Download Complete Notification](assets/screenshot-29.png)
+  
   **Step 6:** The downloaded file is visible in the file manager at `/storage/emulated/0/Download/`:
+  
   ![Downloaded Invoice in File Manager](assets/screenshot-30.png)
+  
 - **Mitigation:**
   - Set `android:exported="false"` for services that should not be accessible from other apps.
   - If the service must be exported, implement a custom permission with `android:protectionLevel="signature"` to restrict access to apps signed with the same key.
@@ -262,20 +268,35 @@ Severity estimates describe the demonstrated lab behavior and should be recalcul
 - **Impact:** An attacker or a malicious app can invoke the protected activity directly using the deep link, bypassing the PIN authentication entirely to access the "Invoice" screen.
 - **Proof of Concept:**
   **Step 1:** The "Unprotected Android Components" challenge lists objectives including "Login using Custom URL Scheme (Without PIN Verification)":
+  
   ![Challenge objectives for Unprotected Android Components](assets/screenshot-31.png)
+  
   **Step 2:** Static analysis of `AndroidManifest.xml` shows `<intent-filter>` for `AccessControl1ViewActivity` with `androgoat://vulnapp` scheme:
+  
   ![AndroidManifest – Deep Link Intent Filter](assets/screenshot-32.png)
+  
   **Step 3:** Executing the ADB command to trigger the deep link:
+  
   `adb shell am start -W -a android.intent.action.VIEW -d "androgoat://vulnapp" owasp.sat.agoat`
   ![Triggering Deep Link via ADB](assets/screenshot-33.png)
+  
   **Step 4:** The protected "Invoice" screen is rendered without authentication — the service is created and the invoice starts downloading:
+  
   ![Service Created via Deep Link](assets/screenshot-34.png)
+  
   **Step 5:** "Invoice is being downloaded" toast message appears, confirming access bypass:
+  
   ![Invoice Download via Deep Link](assets/screenshot-35.png)
+  
   **Step 6:** The invoice download completes successfully, accessible at `/storage/emulated/0/Download/AndroGoatInvoice.txt`:
+  
+
   ![Invoice Downloaded Successfully](assets/screenshot-36.png)
+  
   **Step 7:** The protected view is displayed bypassing all PIN verification:
+  
   ![Access Control Bypassed via Deep Link](assets/screenshot-37.png)
+  
 - **Mitigation:**
   - If the component does not need to be accessible from other apps, set `android:exported="false"`.
   - If deep linking is required, implement robust authorization and session validation checks within the `onCreate()` method of the target activity.
@@ -293,9 +314,14 @@ Severity estimates describe the demonstrated lab behavior and should be recalcul
 - **Impact:** A malicious application on the same device could query the Content Provider to extract application data without user awareness.
 - **Proof of Concept:**
   **Step 1:** The `AndroidManifest.xml` shows the `ContentProviderActivity` component:
+  
+
   ![AndroidManifest – Content Provider Declaration](assets/screenshot-38.png)
+
   **Step 2:** The component can be launched from external applications using standard ADB intents:
+
   ![External Activity Launch via ADB](assets/screenshot-39.png)
+  
 - **Mitigation:**
   - Set `android:exported="false"` if the Content Provider does not need to share data with other apps.
   - Use `android:permission` attributes to define custom permissions for accessing the provider.
@@ -312,12 +338,19 @@ Severity estimates describe the demonstrated lab behavior and should be recalcul
 - **Description:** The application's root detection relies on simple checks for known root binaries and paths (e.g., `/system/app/Superuser.apk`, `/sbin/su`). These checks are easily identifiable and bypassable.
 - **Impact:** Attackers can easily bypass these checks using runtime manipulation tools, enabling them to run the app on rooted devices for advanced dynamic analysis, memory dumping, and function hooking.
 - **Proof of Concept:**
+
   **Step 1:** The Root Detection challenge shows the app correctly identifies the device as rooted ("Device is rooted"):
+
   ![Root Detection – Device is Rooted](assets/screenshot-40.png)
+
   **Step 2:** The root detection check is bypassed using the Objection runtime exploration framework with the command `android root disable`:
+
   ![Objection – Root Detection Bypass](assets/screenshot-41.png)
+
   **Step 3:** The app now incorrectly displays "Device is not rooted":
+
   ![Root Detection Defeated](assets/screenshot-42.png)
+  
 - **Mitigation:**
   - Implement the Google Play Integrity API for reliable environment attestation.
   - Combine multiple proprietary checks, execute them using native C/C++ libraries (JNI), and apply code obfuscation to make reverse engineering more difficult.
@@ -334,12 +367,18 @@ Severity estimates describe the demonstrated lab behavior and should be recalcul
 - **Description:** Similar to root detection, the emulator detection logic is weak and relies on basic checks (build properties, telephony info) that can be trivially bypassed using runtime hooking frameworks.
 - **Impact:** Enables attackers to run the app within a controlled emulator environment, significantly lowering the barrier to entry for dynamic analysis and exploitation.
 - **Proof of Concept:**
+
   **Step 1:** The Emulator Detection challenge screen with its objectives:
   ![Emulator Detection Challenge](assets/screenshot-43.png)
+  
   **Step 2:** Bypassed using Frida with a public Codeshare script: `frida -U -f owasp.sat.agoat --codeshare cubetech126/root-and-emulator-detection-bypass`:
+  
   ![Frida Emulator Detection Bypass Script](assets/screenshot-44.png)
+  
   **Step 3:** After the bypass, the emulator detection check returns "This is not Emulator":
+  
   ![Emulator Detection Defeated](assets/screenshot-45.png)
+  
 - **Mitigation:**
   - Inspect complex telephony and hardware properties that are difficult to emulate (e.g., sensor data, specific build props, battery state).
   - Like root detection, utilize the Play Integrity API.
@@ -362,3 +401,4 @@ Severity estimates describe the demonstrated lab behavior and should be recalcul
 - [OWASP MASVS / MASTG](https://mas.owasp.org/)
 - [CWE-312](https://cwe.mitre.org/data/definitions/312.html) · [CWE-472](https://cwe.mitre.org/data/definitions/472.html) · [CWE-798](https://cwe.mitre.org/data/definitions/798.html) · [CWE-919](https://cwe.mitre.org/data/definitions/919.html) · [CWE-922](https://cwe.mitre.org/data/definitions/922.html) · [CWE-926](https://cwe.mitre.org/data/definitions/926.html) · [CWE-939](https://cwe.mitre.org/data/definitions/939.html)
 - [Android Developer Security Best Practices](https://developer.android.com/topic/security/best-practices)
+ 
